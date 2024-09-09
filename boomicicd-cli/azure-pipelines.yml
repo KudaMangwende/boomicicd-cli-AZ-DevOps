@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - master # Runs the pipeline when code is pushed to the master branch
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  # Checkout code from GitHub
+  - checkout: self
+
+  # Install any required dependencies (if necessary)
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.x"
+      addToPath: true
+
+  # Step 1: Build/Package the CLI
+  - script: |
+      echo "Building CLI and packaging artifacts"
+      # Navigate to CLI folder
+      cd cli/scripts
+      # Package your CLI or run build commands
+      # Assuming you're zipping the output
+      zip -r ../boomicicd-cli-package.zip .
+    displayName: "Package CLI"
+
+  # Step 2: Publish the package as a build artifact
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: "boomicicd-cli/boomicicd-cli-package.zip" # Path to the packaged CLI
+      artifactName: "BoomiCICD_CLI"
+      publishLocation: "Container"
+
+  # Optional: Run tests
+  # Add test steps here if you have any unit or integration tests to run
+
+  # Step 3: Final deployment or publish to a feed
+  # If you want to deploy to a specific location or publish to a feed, add the appropriate step here.
