@@ -7,13 +7,13 @@ ARGUMENTS=(env packageVersion notes listenerStatus)
 OPT_ARGUMENTS=(componentIds processNames extractComponentXmlFolder tag componentType)
 inputs "$@"
 if [ "$?" -gt "0" ]; then
-    return 255;
+    exit 255
 fi
 
 # Prepare folders if needed
 if [ ! -z "${extractComponentXmlFolder}" ]; then
     folder="${WORKSPACE}/${extractComponentXmlFolder}"
-    rm -rf ${folder}
+    rm -rf "${folder}"
     unset extensionJson
     saveExtractComponentXmlFolder="${extractComponentXmlFolder}"
 fi
@@ -32,11 +32,11 @@ saveEnvId=${envId}
 
 # Handle processes or components
 if [ -z "${componentIds}" ]; then
-    IFS=','; for processName in `echo "${processNames}"`; do
+    IFS=','; for processName in $(echo "${processNames}"); do
         notes="${saveNotes}"
         deployNotes="${saveNotes}"
         packageVersion="${savePackageVersion}"
-        processName=`echo "${processName}" | xargs`
+        processName=$(echo "${processName}" | xargs)
         saveProcessName="${processName}"
         listenerStatus="${saveListenerStatus}"
         componentType="${saveComponentType}"
@@ -50,11 +50,11 @@ if [ -z "${componentIds}" ]; then
         ./changeListenerStatus ${envId} ${packageId} ${listenerStatus}
     done   
 else    
-    IFS=','; for componentId in `echo "${componentIds}"`; do
+    IFS=','; for componentId in $(echo "${componentIds}"); do
         notes="${saveNotes}"
         deployNotes="${saveNotes}"
         packageVersion="${savePackageVersion}"
-        componentId=`echo "${componentId}" | xargs`
+        componentId=$(echo "${componentId}" | xargs)
         saveComponentId="${componentId}"
         componentType="${saveComponentType}"
         listenerStatus="${saveListenerStatus}"
@@ -75,7 +75,7 @@ export envId=${saveEnvId}
 
 # Handle any errors
 if [ "$ERROR" -gt 0 ]; then
-   return 255;
+   exit 255
 fi
 
 clean
